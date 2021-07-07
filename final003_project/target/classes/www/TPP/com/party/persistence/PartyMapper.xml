@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.party.persistence.PartyMapper">
+	<resultMap type="www.TPP.com.party.model.Party" id="partyMap"
+		extends="www.TPP.com.common.persistence.CommonMapper.commonMap">
+		<id property="userId" column="user_id"></id>
+		<result property="userPassword" column="user_pwd"></result>
+		<result property="userName" column="user_name"></result>
+		<result property="birthDate" column="birth_dt"></result>
+		<result property="sex" column="sex"></result>
+		<result property="phoneNumber" column="phone_num"></result>
+		<result property="address" column="address"></result>
+		<result property="authority" column="authority"></result>
+		
+		<discriminator javaType="String" column="authority">
+			<case value="admin" resultMap="adminResultMap" />
+			<case value="seller" resultMap="sellerResultMap" />
+			<case value="customer" resultMap="customerResultMap" />
+		</discriminator>
+	</resultMap>
+	
+	<resultMap id="adminResultMap"
+		type="www.TPP.com.party.model.Admin" extends="partyMap">
+	</resultMap>
+	<resultMap id="sellerResultMap"
+		type="www.TPP.com.party.model.Seller" extends="partyMap">
+		<id property="businessRegNum" column="business_reg_num"></id>
+		<result property="businessName" column="business_name"></result>
+		<result property="businessPhoneNum" column="business_phone_num"></result>
+	</resultMap>
+	<resultMap id="customerResultMap"
+		type="www.TPP.com.party.model.Customer" extends="partyMap">
+	</resultMap>
+
+</mapper>

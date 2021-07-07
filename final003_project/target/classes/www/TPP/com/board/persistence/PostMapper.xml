@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.board.persistence.PostMapper">
+	<resultMap type="www.TPP.com.board.model.PostVO" id="postMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="postId" column="post_id"></id>
+		<result property="postTitle" column="post_title"></result>
+		<result property="sellCount" column="sell_count"></result>
+		<result property="rate" column="rate"></result>
+		
+		<!-- Master-Detail (1:N) 구조에서 Detail이 Master를 함께 조인으로 읽어서 객체 만들 때 -->
+		<association property="seller" columnPrefix="s_"
+		 resultMap = "www.TPP.com.party.persistence.PartyMapper.partyMap">
+		</association>
+	</resultMap>
+	
+	<!-- List<PostVO> getPostList(@Param("boardId") String boardId, @Param("criteria") Criteria criteria); -->
+	<select id="getPostList" resultMap="postMap">
+		select p.*, s.user_name s_user_name, s.authority s_authority
+		  from f_post p, f_party s
+		 where p.board_id= #{boardId}
+		   and p.seller_id=s.user_id
+	</select>
+	
+	<!-- PostVO getPost(@Param("boardId") String boardId,@Param("postId") String postId); -->
+	<select id="getPost" resultMap="postMap">
+	SELECT * 
+	  FROM f_post 
+	 WHERE board_id = #{boardId} 
+	   AND post_id = #{postId}
+	</select>
+	
+	<!-- public long getSearchTotalCount(@Param("boardId") String boardId, @Param("criteria") Criteria fromUser); -->
+	
+	<!-- public long getTotalCount(String boardId); -->
+	<select id="getTotalCount" resultType="_long">
+	<![CDATA[
+		  select count(post_id)
+	  		from f_post
+	  	   where board_id = #{boardId}
+	]]>
+	</select>
+</mapper>
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.board.persistence.PostInfoMapper">
+	<resultMap type="www.TPP.com.board.model.PostInfoVO" id="postInfoMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="postInfoId" column="post_info_id"></id>
+		<result property="postInfoName" column="post_info_name"></result>
+		<result property="postInfoContent" column="post_info_content"></result>
+	</resultMap>
+	
+	<!-- List<PostInfoVO> getPostInfoVOList(String postId); -->
+	<select id="getPostInfoVOList" resultMap="postInfoMap">
+	SELECT * FROM f_post_info WHERE post_id = #{postId}
+	</select>
+	
+	
+</mapper>

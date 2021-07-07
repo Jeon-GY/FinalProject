@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.common.persistence.CommonMapper">
+	<resultMap type="www.TPP.com.common.model.CommonAttr" id="commonMap">
+		<result property="registrationDate" column="reg_dt"></result>
+		<result property="updateDate" column="upt_dt"></result>
+	</resultMap>
+</mapper>
