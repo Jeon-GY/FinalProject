@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.product.persistence.ProductMapper">
+	<resultMap type="www.TPP.com.product.model.ProductVO" id="productVOMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="productId" column="product_id"></id>
+		<result property="productName" column="product_name"></result>
+		<result property="productAmount" column="product_amount"></result>
+		<result property="productPrice" column="product_price"></result>
+		<result property="productCount" column="product_count"></result>
+		<result property="userId" column="user_id"></result>
+	</resultMap>
+	
+	<!-- ProductVO getProductByPostId(String postId); -->
+	<select id="getProductByPostId" resultMap="productVOMap">
+	SELECT * FROM f_product WHERE post_id = #{postId}
+	</select>
+	
+	<!-- List<ProductVO>getProductListByUserId(String userId); -->
+	<select id="getProductListByUserId" resultMap="productVOMap">
+	SELECT * FROM f_product WHERE user_id = #{userId}
+	</select>
+	
+</mapper>
