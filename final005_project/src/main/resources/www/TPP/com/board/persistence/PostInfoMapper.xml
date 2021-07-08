@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="www.TPP.com.board.persistence.PostInfoMapper">
+    <resultMap type="www.TPP.com.board.model.PostInfoVO" id="postInfoMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="postInfoId" column="post_info_id"></id>
+		<result property="postInfoContent" column="post_info_content"></result>
+		<result property="userId" column="user_id"></result>
+	</resultMap>
+	
+	<!-- List<PostInfoVO> getPostInfoVOList(String postId); post에 달린 postInfo List 찾기 -->
+	<select id="getPostInfoVOList" resultMap="postInfoMap">
+	SELECT * FROM f_post_info WHERE post_id = #{postId}
+	</select>
+	
+	<!-- int registerPostInfoList(@Param("postInfoList") List<PostInfoVO> postInfoList, @Param("post") PostVO post); -->
+	<insert id="registerPostInfo">
+	INSERT ALL
+		<foreach collection="postInfoList" item="postInfo">
+			INTO f_post_info(post_info_id, post_id, user_id, post_info_content)
+				VALUES(#{postInfo.postInfoId}, #{post.postId}, #{post.sellerId}, #{postInfo.postInfoContent})
+		</foreach>
+	</insert>
+	
+	<!-- public int insertReply(@Param("originalId") String originalId, @Param("reply") ReplyVO reply);
+	<insert id="insertReply">
+		<selectKey keyProperty="reply.id" order="BEFORE" resultType="string">
+			select #{originalId} || get_id(seq_reply_id.nextval) from dual
+		</selectKey>
+		insert into s_reply(id, writer_id, content, descrim)
+		values(#{reply.id}, #{reply.writer.userId}, #{reply.content}, #{reply.DESCRIM4REPLY})
+	</insert>
+	 -->
+</mapper>
