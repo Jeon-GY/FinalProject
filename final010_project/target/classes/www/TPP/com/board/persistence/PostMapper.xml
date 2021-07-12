@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.board.persistence.PostMapper">
+	<resultMap type="www.TPP.com.board.model.PostVO" id="postMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="postId" column="post_id"></id>
+		<result property="postTitle" column="post_title"></result>
+		<result property="sellCount" column="sell_count"></result>
+		<result property="rateScore" column="rate_score"></result>
+		<result property="rateCount" column="rate_count"></result>
+		<result property="sellerId" column="seller_id"></result>
+	</resultMap>
+	
+	<!-- public List<PostVO> getPostList(@Param("criteria") Criteria criteria); -->
+	<select id="getPostList" resultMap="postMap">
+	<![CDATA[
+	select p.*, w.user_name w_user_name, w.authority w_authority 
+	  from (
+	  	  SELECT *
+		    FROM f_post
+		   order by post_id desc
+		  OFFSET (#{criteria.pageNumber} - 1) * #{criteria.amount} ROWS FETCH FIRST #{criteria.amount} ROWS ONLY
+	       ) p, f_party w
+	 where p.seller_id = w.user_id	]]>
+	</select>
+	
+	<!-- List<PostVO> getPost(@Param("boardId") String boardId,@Param("postId") String postId); -->
+	<select id="getPost" resultMap="postMap">
+	SELECT * FROM f_post WHERE post_id = #{postId}
+	</select>
+	
+	<!-- long getSearchTotalCount(@Param("boardId") String boardId, @Param("criteria") Criteria fromUser); -->
+	<select id="getSearchTotalCount" resultType="_long">
+	SELECT COUNT(*)
+		FROM f_post
+		WHERE post_title like '% || #{criteria.searching} || %'
+		<!-- post_info 줄 추가 -->
+			
+	</select>
+
+	<!-- long getTotalCount(String boardId); -->
+	<select id="getTotalCount" resultType="_long">
+	SELECT COUNT(*) FROM f_post
+	</select>
+	
+	<!-- int registerPost(@Param("post")PostVO post); -->
+	<insert id="registerPost">
+		<selectKey keyProperty="post.postId" order="BEFORE" resultType="string">
+			select get_id(sq_post_id.nextval) from dual
+		</selectKey>
+        insert into f_post(post_id, seller_id, post_title, image)
+           values(#{post.postId}, #{post.seller.userId}, #{post.postTitle}, #{post.image})  
+    </insert>
+    
+    <!-- public int updatePost(PostVO post); -->
+   	<update id="updatePost">
+		update f_post
+		   set post_title = #{postTitle},
+		   	   upt_dt = sysdate
+		 where post_id = #{postId}
+	</update>
+    	
+
+	<!-- public List<PostVO> getPostListByUserId(String userId); -->
+	<select id="getPostListByUserId" resultMap="postMap">
+		SELECT *
+		  FROM f_post
+		 WHERE seller_id = #{userId}
+	</select>
+   
+	<!-- public int deletePost(PostVO post); -->
+	<delete id="deletePost">
+		delete from f_post where post_id = #{postId}
+	</delete>
+	   
+</mapper>
+
+
+
+

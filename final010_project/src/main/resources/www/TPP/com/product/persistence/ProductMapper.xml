@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.product.persistence.ProductMapper">
+	<resultMap type="www.TPP.com.product.model.ProductVO" id="productVOMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="productId" column="product_id"></id>
+		<result property="productName" column="product_name"></result>
+		<result property="productAmount" column="product_amount"></result>
+		<result property="productPrice" column="product_price"></result>
+		<result property="productCount" column="product_count"></result>
+		<result property="locationId" column="location_id"></result>
+		<result property="userId" column="user_id"></result>
+	</resultMap>
+	
+	<!-- public List<ProductVO> getProductListByPostId(String postId); -->
+	<select id="getProductListByPostId" resultMap="productVOMap">
+		SELECT * FROM f_product WHERE post_id = #{postId}
+	</select>
+	
+	<!-- List<ProductVO>getProductListByUserId(String userId); -->
+	<select id="getProductListByUserId" resultMap="productVOMap">
+		SELECT * FROM f_product WHERE user_id = #{userId}
+	</select>
+	
+	<!-- public ProductVO registerProduct(@Param("product") ProductVO product, @Param("post") PostVO post, 
+	@Param("location") LocationVO location); -->
+	<insert id="registerProduct">
+		<selectKey keyProperty="product.productId" order="BEFORE" resultType="string">
+			select get_id(sq_product_id.nextval) from dual
+		</selectKey>
+		INSERT INTO f_product(location_id, product_id, post_id, product_name, product_amount, product_price, product_count, user_id)
+			values(#{location.locationId}, #{product.productId}, #{post.postId}, #{product.productName}, 
+			#{product.productAmount}, #{product.productPrice}, #{product.productCount}, #{post.seller.userId})
+	</insert>
+	
+	<!-- public boolean deleteProduct(ProductVO product); -->
+	<delete id="deleteProduct">
+		delete from f_product 
+		 where product_id = #{productId}
+	</delete>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
