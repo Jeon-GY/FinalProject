@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- resultMap : DB Table 정의 내역과 객체 정의 내역에 있어 mismatch(부조화)가 있을 시 이를 연동, 
+	짝 지어주는 정보를 정의함 -->
+<mapper	namespace="www.TPP.com.board.persistence.ReplyMapper">
+	<resultMap type="www.TPP.com.board.model.ReplyVO" id="replyMap" 
+      extends="www.TPP.com.common.persistence.CommonMapper.commonMap">
+      <id property="replyId" column="reply_id"></id>
+      <result property="postInfoId" column="post_info_id"></result>
+      <result property="userId" column="user_id"></result>
+      <result property="content" column="content"></result>
+   </resultMap>
+	
+	
+ <!-- ********************************* 댓글 처리 함수 정의 영역 ********************************* -->
+   <!--    public List<ReplyVO> getReplyListWithPaging(@Param("originalId") String originalId, 
+         @Param("idLength") String idLength,
+         @Param("cri") Criteria cri); -->   
+   <select id="getReplyListWithPaging" resultMap="replyMap">
+   <![CDATA[
+   select p.*
+     from (
+          SELECT *
+          FROM f_reply
+         where post_info_id like #{originalId} || '%'
+           and length(f_reply.reply_id) = #{idLength}
+         ORDER BY reply_id DESC
+        OFFSET (#{cri.pageNumber} - 1) * #{cri.amount} ROWS FETCH FIRST #{cri.amount} ROWS ONLY
+          ) p, f_party w
+    where p.user_id = w.user_id   ]]>
+   </select>
+   
+   <!-- public ReplyVO findReplyById(String replyId); -->
+	<select id="findReplyById" resultMap="replyMap">
+	<![CDATA[
+	select p.*
+	  from f_reply p, f_party w
+	 where p.reply_id = #{replyId}
+	   and p.user_id = w.user_id
+	]]>
+	</select>
+	
+   <!-- public int insertReply(@Param("original") String originalId, @Param("reply") ReplyVO reply); -->
+   <insert id="insertReply">
+      <selectKey keyProperty="reply.replyId" order="BEFORE" resultType="String">
+         select #{originalId} || get_id(seq_reply_id.nextval) from dual
+      </selectKey>
+      insert into f_reply(reply_id, user_id, content, post_info_id)
+      values(#{reply.replyId}, #{reply.userId}, #{reply.content}, #{originalId})
+   </insert>
+
+   <!-- public int updateReply(ReplyVO reply); -->
+   <update id="updateReply">
+   update f_reply
+      set content = #{content},
+          upt_dt = sysdate          
+    where reply_id = #{id}
+   </update>
+
+   <!--public int deleteReplyById(String id);-->
+   <delete id="deleteReplyById">
+   delete from f_reply where reply_id like #{id} || '%'
+   </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
