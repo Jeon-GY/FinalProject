@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.board.persistence.PostMapper">
+   <resultMap type="www.TPP.com.board.model.PostVO" id="postMap"
+   extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+      <id property="postId" column="post_id"></id>
+      <result property="postName" column="post_name"></result>
+      <result property="rateScore" column="rate_score"></result>
+      <result property="rateCount" column="rate_count"></result>
+      <result property="sellCount" column="sell_count"></result>
+   </resultMap>
+
+   <!-- long getPostTotalCount(); -->
+   <select id="getPostTotalCount" resultType="_long">
+      SELECT COUNT(*) FROM f_post
+   </select>
+   
+   <!-- String getPostId(@Param("postName") String postName); -->
+   <select id="getPostId" resultMap="postMap">
+		SELECT *
+			FROM f_post
+			WHERE post_name = #{postName}
+   </select>
+   
+   <!-- BoardVO getPost(@Param("postId") String postId); -->
+   <select id="getPost" resultMap="postMap">
+   SELECT *
+      FROM f_post
+      WHERE post_id = #{postId}
+      ORDER BY post_id DESC
+   </select>
+   
+   <!-- List<BoardVO> getPostList(@Param("criteria") Criteria criteria); -->
+   <select id="getPostList" resultMap="postMap">
+		SELECT *
+		    FROM f_post
+		   order by post_id desc
+		  OFFSET (#{criteria.pageNumber} - 1) * #{criteria.amount} ROWS FETCH FIRST #{criteria.amount} ROWS ONLY
+	</select>
+   <!-- List<BoardVO> getPostListBySellCount(@Param("criteria") Criteria criteria); -->
+   <select id="getPostListBySellCount" resultMap="postMap">
+   SELECT *
+      FROM f_post
+      ORDER BY sell_count DESC
+   </select>
+   
+   <!-- List<BoardVO> getPostListByRate(@Param("criteria") Criteria criteria); -->
+   <select id="getPostListByRate" resultMap="postMap">
+   SELECT *
+      FROM f_post
+      ORDER BY rate_count DESC
+   </select>
+   
+   <!-- long getPostTotalCountBySearching(@Param("criteria") Criteria criteria); -->
+   <select id="getPostTotalCountBySearching" resultType="_long">
+			SELECT DISTINCT COUNT(*)
+				FROM f_post
+					WHERE post_name LIKE '%' || #{criteria.searching} || '%'
+                ORDER BY post_id DESC
+   </select>
+   
+   <!-- List<BoardVO> getPostListBySearching(@Param("criteria") Criteria criteria); -->
+   <select id="getPostListBySearching" resultMap="postMap">
+			SELECT DISTINCT p.*
+				FROM f_post p, f_ppt_for_sale pi
+				WHERE
+					p.post_name LIKE '%' || #{criteria.searching} || '%'
+					OR (pi.content LIKE '%' || #{criteria.searching} || '%'
+	                AND p.post_id = pi.post_id)
+                ORDER BY p.post_id DESC
+                OFFSET (#{criteria.pageNumber} - 1) * #{criteria.amount} ROWS FETCH FIRST #{criteria.amount} ROWS ONLY 
+   </select>
+   
+   <!-- List<BoardVO> getPostListByUserId(String userId); -->
+   <select id="getPostListByUserId" resultMap="postMap">
+   SELECT *
+	  FROM f_post
+   </select>
+   
+   	<!-- long getTotalCount(String boardId); -->
+	<select id="getTotalCount" resultType="_long">
+	SELECT COUNT(*)
+		FROM (
+			SELECT DISTINCT p.*
+				FROM f_post p, f_post_info pi
+				<where>
+					p.post_title LIKE '%' || #{criteria.searching} || '%'
+					OR (pi.post_info_content LIKE '%' || #{criteria.searching} || '%'
+	                AND p.post_id = pi.post_id)
+                </where>
+                ORDER BY p.post_id DESC
+			) p, f_party s
+		WHERE p.user_id = s.user_id
+	</select>
+   
+	<!-- int registerPost(@Param("post") PostVO post); -->
+	<insert id="registerPost">
+		<selectKey keyProperty="post.postId" order="BEFORE" resultType="string">
+			SELECT get_id(sq_post_id.nextval) from dual
+		</selectKey>
+		INSERT INTO f_post(post_id, post_name)
+		VALUES(#{post.postId}, #{post.postName})
+   </insert>
+   
+   <!-- int updatePost(PostVO post); -->
+   	<update id="updatePost">
+		UPDATE f_post
+		   SET post_name = #{post.postName},
+		   upt_dt = sysdate
+		 WHERE post_id = #{post.postId}
+	</update>
+	
+   <!-- boolean deletePost(PostVO post); -->
+   <delete id="deletePost">
+   DELETE 
+      FROM f_post
+      WHERE post_id = #{postId}
+   </delete>
+</mapper>
