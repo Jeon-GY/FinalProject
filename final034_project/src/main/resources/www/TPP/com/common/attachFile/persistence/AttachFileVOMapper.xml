@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.common.attachFile.persistence.AttachFileVOMapper">
+	<resultMap type="www.TPP.com.common.attachFile.model.AttachFileVO" id="rmAttachFileVO">
+		<result property="uuid" column="uuid"></result>
+		<result property="savedFolderPath" column="saved_folder_path"></result>
+		<result property="pureFileName" column="pure_file_name"></result>
+		<result property="multiMediaType" column="multi_media_type"></result>
+	</resultMap>
+	
+	<!-- public int insert(@Param("postId") String postId, @Param("listAttachFile") List<AttachFileVO> listAttachFile); -->
+	<insert id="insert">
+		INSERT ALL
+			<foreach collection="listAttachFile" item="af">
+				into f_attach_file(uuid, saved_folder_path, pure_file_name, multi_media_type)
+					 VALUES(#{af.uuid}, #{af.savedFolderPath}, #{af.pureFileName}, #{af.multiMediaType})
+				into fm_ppt_attach(ppt_for_sale_id, uuid)
+					 VALUES(#{pptForSaleId}, #{af.uuid})
+			</foreach>
+			SELECT * FROM dual
+    </insert>
+	
+	<!-- public int delete(@Param("postId") String postId); -->
+	<delete id="delete">
+	   {call
+        declare
+        begin
+            delete from f_attach_file 
+			 where uuid in (
+					select uuid
+			 		  from fm_post_attach
+					 where post_id = #{postId}
+					 );
+            delete from fm_post_attach where post_id = #{postId};
+        end
+        }
+	</delete>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

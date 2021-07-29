@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.party.persistence.PartyMapper">
+	<resultMap type="www.TPP.com.party.model.Party" id="partyMap"
+		extends="www.TPP.com.common.persistence.CommonMapper.commonMap">
+		<id property="userId" column="user_id"></id>
+		<result property="userPassword" column="user_pwd"></result>
+		<result property="userName" column="user_name"></result>
+		<result property="email" column="email"></result>
+		<result property="birthDate" column="birth_dt"></result>
+		<result property="sex" column="sex"></result>
+		<result property="phoneNumber" column="phone_num"></result>
+		<result property="address" column="address"></result>
+		<result property="authority" column="authority"></result>
+
+		<discriminator javaType="String" column="authority">
+			<case value="admin" resultMap="adminResultMap" />
+			<case value="seller" resultMap="sellerResultMap" />
+			<case value="customer" resultMap="customerResultMap" />
+		</discriminator>
+	</resultMap>
+
+	<resultMap id="adminResultMap" type="www.TPP.com.party.model.Admin" extends="partyMap">
+	</resultMap>
+	<resultMap id="sellerResultMap" type="www.TPP.com.party.model.Seller" extends="partyMap">
+		<id property="businessRegNum" column="business_reg_num"></id>
+		<result property="businessName" column="business_name"></result>
+		<result property="userId" column="user_id"></result>
+	</resultMap>
+	<resultMap id="customerResultMap"
+		type="www.TPP.com.party.model.Customer" extends="partyMap">
+	</resultMap>
+
+	<!-- String getBusinessName(String postId); -->
+	<select id="getBusinessName">
+		SELECT business_name
+		FROM f_seller_info
+		WHERE user_id
+		in
+		(SELECT seller_id
+		FROM f_post
+		WHERE post_id = #{postId})
+	</select>
+
+	<!-- public Party getParty(Party party);--> 
+	<select id="getParty" resultMap ="partyMap">
+	 SELECT * 
+	   FROM f_party 
+	</select>
+
+	<!-- boolean registParty(@Param("party") Party party); -->
+	<insert id="registParty">
+		INSERT INTO f_party(user_id, user_pwd, user_name,
+		birth_dt, sex, phone_num, address, email)
+		VALUES(#{party.userId},
+		#{party.userPassword}, #{party.userName}, #{party.birthDate},
+		#{party.sex}, #{party.phoneNumber}, #{party.address}, #{party.email})
+	</insert>
+
+	<!-- int updateParty(@Param("party") Party party); <update id="updateParty"> 
+		UPDATE f_party SET user_pwd = #{party.userPassword}, phone_num = #{party.phoneNumber}, 
+		address = #{party.address} WHERE user_id = #{party.userId} </update> -->
+
+	<!-- int makeSeller(@Param("seller") Seller seller); <update id="makeSeller"> 
+		UPDATE f_party SET authority = 'seller' WHERE user_id = #{seller.user_id} 
+		</update> -->
+
+	<!-- int registSeller(@Param("seller")Seller seller); <insert id="registSeller"> 
+		INSERT INTO f_seller_info(business_reg_num, user_id, business_name, business_phone_num) 
+		VALUES(#{seller.businessRegNum}, #{seller.userId}, #{seller.businessName}, 
+		#{seller.businessPhoneNum}) </insert> -->
+
+	<!-- boolean checkParty(@Param("party") Party party); <select id="checkParty" 
+		resultMap="partyMap"> SELECT * FROM f_party WHERE user_id = #{party.userId} 
+		AND user_pwd = #{party.userPassword} </select> -->
+
+	<!-- int checkId(@Param("userId") String userId); -->
+	<select id="checkId" resultType="_int">
+		SELECT COUNT(*)
+		FROM f_party
+		WHERE user_id = #{userId}
+	</select>
+
+	<!-- ########################################로그인 영역################################################# -->
+
+	<!-- public Party userLogin(Party party); -->
+	<select id="userLogin" resultMap="partyMap">
+		select *
+		  from f_party
+		 where user_id = #{userId}
+		   and user_pwd= #{userPassword}
+	</select>
+	
+	<!-- public int updateLoginDate(String userId); -->
+	<update id="updateLoginDate">
+	update f_party set upt_dt = sysdate
+	 where user_id = #{userId}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
