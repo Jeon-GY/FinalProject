@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.product.persistence.ProductCategoryMapper">
+	<resultMap type="www.TPP.com.product.model.ProductCategoryVO" id="productVOMap"
+	extends="www.TPP.com.board.persistence.BoardMapper.boardMap">
+		<id property="productCategoryId" column="product_category_id"></id>
+		<result property="productCategoryName" column="product_category_name"></result>
+	</resultMap>
+	
+	<!-- List<ProductCategoryVO> getProductCategoryList(); -->
+	<select id="getProductCategoryList" resultMap="productVOMap">
+	SELECT * FROM f_product_category
+	</select>
+	
+	<!-- public List<ProductVO> getProductListByPostId(String postId); -->
+	<select id="getProductListByPostId" resultMap="productVOMap">
+		SELECT * FROM f_product WHERE post_id = #{postId}
+	</select>
+	
+	<!-- List<ProductVO>getProductListByUserId(String userId); -->
+	<select id="getProductListByUserId" resultMap="productVOMap">
+		SELECT * FROM f_product WHERE user_id = #{userId}
+	</select>
+	
+	<!-- boolean deleteProduct(ProductVO product); -->
+	<delete id="deleteProduct">
+		DELETE FROM f_product 
+		 WHERE product_id = #{productId}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

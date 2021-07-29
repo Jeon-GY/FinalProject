@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.product.persistence.LocationMapper">
+	<resultMap type="www.TPP.com.product.model.LocationVO" id="locationVOMap">
+		<id property="locationId" column="location_id"></id>
+		<result property="locationName" column="location_name"></result>
+	</resultMap>
+
+	<!-- List<LocationVO> getLocationList(); -->
+	<select id="getLocationList" resultMap="locationVOMap">
+	<![CDATA[
+	SELECT * 
+	  FROM f_location
+	 WHERE LENGTH(location_id) <= 2
+	 ]]>
+	</select>
+	
+	<!-- List<LocationVO> getLocationListByLocation(String locationId); -->
+	<select id="getLocationListByLocation" resultMap="locationVOMap">
+	<![CDATA[
+	SELECT distinct *
+		FROM f_location f
+		WHERE f.location_id LIKE #{locationId} || '%'
+		AND length(f.location_id) = 5
+	]]>
+	</select>
+	
+</mapper>
