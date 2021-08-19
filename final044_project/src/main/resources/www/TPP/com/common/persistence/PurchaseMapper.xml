@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.common.persistence.PurchaseMapper">
+	<resultMap type="www.TPP.com.common.model.PurchaseVO" id="purchaseMap"
+		extends="www.TPP.com.board.persistence.PptForSaleMapper.pptForSaleMap">
+		<id property="purchaseId" column="purchase_id"></id>
+		<result property="count" column="count"></result>
+		<result property="pptForSaleId" column="ppt_for_sale_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="purchaseDate" column="purchase_dt"></result>
+		<result property="cart" column="cart"></result>
+	</resultMap>
+
+	<!-- int addCart(String userId, String originalId, int count); -->
+	<insert id="addCart">
+		<selectKey keyProperty="purchaseId" order="BEFORE"
+			resultType="string">
+			SELECT get_id(sq_purchase_id.nextval) from dual
+		</selectKey>
+		INSERT INTO f_purchase(purchase_id, count, ppt_for_sale_id, user_id,
+		cart)
+		VALUES(#{purchaseId}, #{count}, #{originalId}, #{userId}, '1')
+	</insert>
+
+	<!-- List<PurchaseVO> getPostListByUserId(String userId); -->
+	<select id="getPurchaseListByUserId" resultMap="purchaseMap">
+		SELECT *
+		FROM f_purchase
+		WHERE user_id = #{userId}
+	</select>
+	
+	<!-- Integer deleteCart(@Param("userId") String userId, @Param("purId") String purId); -->
+	<delete id="deleteCart">
+		DELETE FROM f_purchase
+		WHERE user_id = #{userId}
+		AND purchase_id = #{purId}
+	</delete>
+</mapper>
