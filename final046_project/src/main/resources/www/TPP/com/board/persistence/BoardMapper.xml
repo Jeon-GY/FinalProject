@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.TPP.com.board.persistence.BoardMapper">
+	<resultMap type="www.TPP.com.board.model.BoardVO"
+		id="boardMap">
+		<result property="boardId" column="board_id"></result>
+		<result property="boardName" column="board_name"></result>
+	</resultMap>
+
+	<!-- List<BoardVO> getBoardList(); -->
+	<select id="getBoardList" resultMap="boardMap">
+		SELECT * FROM f_board
+	</select>
+
+	<!-- BoardVO getBoard(String boardId); -->
+	<select id="getBoard" resultMap="boardMap">
+		SELECT * FROM f_board WHERE board_id = #{boardId}
+	</select>
+
+</mapper>
